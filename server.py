@@ -10,6 +10,7 @@ class Server:
             self.activeUser = None
             self.loadUsers()
 
+    # opens and reads from the users.txt file
     def loadUsers(self):
         try:
             file = open('users.txt')
@@ -19,6 +20,7 @@ class Server:
         except:
             print("An error occured reading the users file")
 
+    # starts the server and begins listening
     def startServer(self):
         self.socket.bind((self.IP, self.port))
         self.socket.listen(1)
@@ -28,11 +30,13 @@ class Server:
             self.userConnection(userSocket)
 
     def userConnection(self, userSocket):
+        # while loop that receives the messages
         while True:
             try:
                 msg = userSocket.recv(1024).decode('utf-8')
                 command = msg.split()[0].lower() # the users command is the first word in the msg string, makes it lowcase fo LOGIN, LoGiN, Login all work
 
+                # uses the command to do what the user wants
                 if command == 'login':
                     print(msg)
                     self.login(userSocket, msg)
@@ -42,11 +46,13 @@ class Server:
                     self.sendMsg(userSocket, msg)
                 elif command == 'logout':
                     self.logout(userSocket, msg)
+                else:
+                    userSocket.send(("Command " + command + " not found").encode('utf-8'))
 
             except Exception as e:
                 print("An error occured")
 
-
+    # checks if the credentials the user input are valid and logs them in
     def login(self, userSocket, msg):
         if self.activeUser:
             userSocket.send("There is already another user logged in".encode('utf-8'))
@@ -59,6 +65,7 @@ class Server:
         else:
             userSocket.send("Username or password was incorrect".encode('utf-8'))
 
+    # creates a new user if there is not already a user with the username present. Also writes the new user to the users.txt file
     def newUser(self, userSocket, msg):
         if self.activeUser:
             userSocket.send("There is already another user logged in".encode('utf-8'))
@@ -73,6 +80,7 @@ class Server:
             userSocket.send(("An account for " + username + " has been created").encode('utf-8'))
             file.close()
 
+    # if the user is logged in sends a message to the chatroom
     def sendMsg(self, userSocket, msg):
         if not self.activeUser:
             userSocket.send("You must be logged in to send messages".encode('utf-8'))
@@ -83,6 +91,7 @@ class Server:
         command, outgoingMsg = msgParts
         userSocket.send((self.activeUser + ": " + outgoingMsg).encode('utf-8'))
 
+    # logs the user out and sends a message to the chatroom that they have logged out
     def logout(self, userSocket, msg):
         if self.activeUser:
             loogedOut = self.activeUser
