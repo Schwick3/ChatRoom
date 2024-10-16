@@ -1,3 +1,8 @@
+# ChatRoom Project Version One
+# Skylar Perry
+# Networks 1
+# Fall 2024
+
 import socket
 
 # class for the server side
@@ -18,7 +23,7 @@ class Server:
                 username, password = line.strip().split(',') # removes whitespace in the current line and all commas
                 self.users[username.strip()] = password.strip() # adds the current username and password set into the dictionary
         except:
-            print("An error occured reading the users file")
+            print("An error occured reading the users.txt file")
 
     # starts the server and begins listening
     def startServer(self):
@@ -38,7 +43,7 @@ class Server:
 
                 # uses the command to do what the user wants
                 if command == 'login':
-                    print(msg)
+                    # print(msg)
                     self.login(userSocket, msg)
                 elif command == 'newuser':
                     self.newUser(userSocket, msg)
@@ -50,7 +55,7 @@ class Server:
                     userSocket.send(("Command " + command + " not found").encode('utf-8'))
 
             except Exception as e:
-                print("An error occured")
+                print("An error occured connecting to the user")
 
     # checks if the credentials the user input are valid and logs them in
     def login(self, userSocket, msg):
@@ -58,9 +63,10 @@ class Server:
             userSocket.send("There is already another user logged in".encode('utf-8'))
             return
         _, username, password = msg.split()
-        print( username + ' ' + password)
+        # print( username + ' ' + password)
         if username in self.users and self.users[username] == password:
             self.activeUser = username
+            print(username + " login")
             userSocket.send((username + " has logged in").encode('utf-8'))
         else:
             userSocket.send("Username or password was incorrect".encode('utf-8'))
@@ -77,6 +83,7 @@ class Server:
             self.users[username] = password
             file = open('users.txt', 'a')
             file.write('\n' + username + ', ' + password)
+            print("An account for " + username + " has been created")
             userSocket.send(("An account for " + username + " has been created").encode('utf-8'))
             file.close()
 
@@ -89,21 +96,25 @@ class Server:
         msgParts = msg.split(maxsplit=1)
 
         command, outgoingMsg = msgParts
-        userSocket.send((self.activeUser + ": " + outgoingMsg).encode('utf-8'))
+        outgoingMsg = (self.activeUser + ": " + outgoingMsg)
+        print(outgoingMsg)
+        userSocket.send(outgoingMsg.encode('utf-8'))
 
     # logs the user out and sends a message to the chatroom that they have logged out
     def logout(self, userSocket, msg):
         if self.activeUser:
-            loogedOut = self.activeUser
+            logedOut = self.activeUser
             self.activeUser = None
+            print(logedOut + " logout")
             userSocket.send("You have been logged out".encode('utf-8'))
-            userSocket.send((loogedOut + " has logged out").encode('utf-8'))
+            userSocket.send((logedOut + " has logged out").encode('utf-8'))
         else:
             userSocket.send("You are not logged in".encode('utf-8'))
 
 # Main, starting up the server with my port number
+print("My chatroom server version one \n")
 port = 14316
 server = Server(port)
-for username, password in server.users.items():
-    print(f"Username:{username} Password:{password}")
+# for username, password in server.users.items():
+#    print(f"Username:{username} Password:{password}")
 server.startServer()

@@ -1,3 +1,8 @@
+# ChatRoom Project Version One
+# Skylar Perry
+# Networks 1
+# Fall 2024
+
 import socket
 import threading
 
@@ -25,11 +30,11 @@ class Client:
     def sendMsg(self):
         while True:
             msg = input()
-            msgParts = msg.split(maxsplit=1)
-
-            # making sure the commands are being used correctly, if not skips them
-            command, outgoingMsg = msgParts
+            command = msg.split()[0]
             if command == 'newuser':
+                msgParts = msg.split(maxsplit=1)
+                # making sure the commands are being used correctly, if not skips them
+                _, outgoingMsg = msgParts
                 if len(msg.split()[1]) > 32 or len(msg.split()[1]) < 3:
                     print("Username must be between 3 and 32 characters")
                     continue
@@ -37,6 +42,9 @@ class Client:
                     print("Password must be between 4 and 8 characters")
                     continue
             if command == 'send':
+                msgParts = msg.split(maxsplit=1)
+                # making sure the commands are being used correctly, if not skips them
+                _, outgoingMsg = msgParts
                 if len(outgoingMsg) > 256 or len(outgoingMsg) == 0 or len(msgParts) < 2:
                     print("Message must be between 1 and 256 characters")
                     continue
@@ -51,6 +59,7 @@ class Client:
             print(msg)
 
 # Main, connecting to server and starting to receive and send messages
+print("My chatroom client version one\n")
 
 host = '127.0.0.1'
 port = 14316
