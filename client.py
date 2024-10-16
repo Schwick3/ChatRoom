@@ -30,7 +30,12 @@ class Client:
     def sendMsg(self):
         while True:
             msg = input()
+            # command variable to help validate commands
             command = msg.split()[0]
+            if command == 'login':
+                if len(msg.split()) < 3:
+                    print("Not enough arguments to login. You have have username and password")
+                    continue
             if command == 'newuser':
                 msgParts = msg.split(maxsplit=1)
                 # making sure the commands are being used correctly, if not skips them
@@ -41,12 +46,18 @@ class Client:
                 if len(msg.split()[1]) > 8 or len(msg.split()[1]) < 4:
                     print("Password must be between 4 and 8 characters")
                     continue
+                if len(msg.split()) < 3:
+                    print("Not enough arguments to create a new user. You have have username and password.")
+                    continue
             if command == 'send':
                 msgParts = msg.split(maxsplit=1)
                 # making sure the commands are being used correctly, if not skips them
                 _, outgoingMsg = msgParts
                 if len(outgoingMsg) > 256 or len(outgoingMsg) == 0 or len(msgParts) < 2:
                     print("Message must be between 1 and 256 characters")
+                    continue
+                if len(msg.split()) < 2:
+                    print("Not enough arguments to send a message.")
                     continue
 
 

@@ -39,6 +39,9 @@ class Server:
         while True:
             try:
                 msg = userSocket.recv(1024).decode('utf-8')
+                # in case a user disconnects, make sure there it isnt constantly printing an error has occured connecting to the user
+                if not msg:
+                    break
                 command = msg.split()[0].lower() # the users command is the first word in the msg string, makes it lowcase fo LOGIN, LoGiN, Login all work
 
                 # uses the command to do what the user wants
@@ -76,6 +79,7 @@ class Server:
         if self.activeUser:
             userSocket.send("There is already another user logged in".encode('utf-8'))
             return
+        # stores the username and password into variables to later be used
         _, username, password = msg.split()
         if username in self.users:
             userSocket.send("That username is already in use".encode('utf-8'))
@@ -93,9 +97,10 @@ class Server:
             userSocket.send("You must be logged in to send messages".encode('utf-8'))
             return
 
+        # splits the command for the message the user wants to send
         msgParts = msg.split(maxsplit=1)
-
         command, outgoingMsg = msgParts
+
         outgoingMsg = (self.activeUser + ": " + outgoingMsg)
         print(outgoingMsg)
         userSocket.send(outgoingMsg.encode('utf-8'))
