@@ -36,29 +36,34 @@ class Server:
 
     def userConnection(self, userSocket):
         # while loop that receives the messages
-        while True:
-            try:
-                msg = userSocket.recv(1024).decode('utf-8')
-                # in case a user disconnects, make sure there it isnt constantly printing an error has occured connecting to the user
-                if not msg:
-                    break
-                command = msg.split()[0].lower() # the users command is the first word in the msg string, makes it lowcase fo LOGIN, LoGiN, Login all work
+        try:
+            while True:
+                try:
+                    msg = userSocket.recv(1024).decode('utf-8')
+                    # in case a user disconnects, make sure there it isnt constantly printing an error has occured connecting to the user
+                    if not msg:
+                        break
+                    command = msg.split()[0].lower() # the users command is the first word in the msg string, makes it lowcase fo LOGIN, LoGiN, Login all work
 
-                # uses the command to do what the user wants
-                if command == 'login':
-                    # print(msg)
-                    self.login(userSocket, msg)
-                elif command == 'newuser':
-                    self.newUser(userSocket, msg)
-                elif command == 'send':
-                    self.sendMsg(userSocket, msg)
-                elif command == 'logout':
-                    self.logout(userSocket, msg)
-                else:
-                    userSocket.send(("Command " + command + " not found").encode('utf-8'))
+                    # uses the command to do what the user wants
+                    if command == 'login':
+                        # print(msg)
+                        self.login(userSocket, msg)
+                    elif command == 'newuser':
+                        self.newUser(userSocket, msg)
+                    elif command == 'send':
+                        self.sendMsg(userSocket, msg)
+                    elif command == 'logout':
+                        self.logout(userSocket, msg)
+                        break
+                    else:
+                        userSocket.send(("Command " + command + " not found").encode('utf-8'))
 
-            except Exception as e:
-                print("An error occured connecting to the user")
+                except Exception as e:
+                    print("An error occured connecting to the user")
+        finally:
+            self.activeUser = None
+            userSocket.close()
 
     # checks if the credentials the user input are valid and logs them in
     def login(self, userSocket, msg):
