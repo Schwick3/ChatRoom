@@ -2,6 +2,7 @@
 # Skylar Perry
 # Networks 1
 # Fall 2024
+# This is the client side of the chatroom, it handles sending messages to the server and checks to make sure the commands are valid
 
 import socket
 import threading

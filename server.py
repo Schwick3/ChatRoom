@@ -2,6 +2,7 @@
 # Skylar Perry
 # Networks 1
 # Fall 2024
+# This is a simple chatroom in which the server gets messages from a user and executes based on the contents of the messages
 
 import socket
 
@@ -62,6 +63,7 @@ class Server:
                     print("An error occured connecting to the user")
         finally:
             self.activeUser = None
+            userSocket.close()
 
     # checks if the credentials the user input are valid and logs them in
     def login(self, userSocket, msg):
