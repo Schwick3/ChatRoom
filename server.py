@@ -55,7 +55,6 @@ class Server:
                         self.sendMsg(userSocket, msg)
                     elif command == 'logout':
                         self.logout(userSocket, msg)
-                        break
                     else:
                         userSocket.send(("Command " + command + " not found").encode('utf-8'))
 
@@ -63,7 +62,6 @@ class Server:
                     print("An error occured connecting to the user")
         finally:
             self.activeUser = None
-            userSocket.close()
 
     # checks if the credentials the user input are valid and logs them in
     def login(self, userSocket, msg):
@@ -116,7 +114,6 @@ class Server:
             logedOut = self.activeUser
             self.activeUser = None
             print(logedOut + " logout")
-            userSocket.send("You have been logged out".encode('utf-8'))
             userSocket.send((logedOut + " has logged out").encode('utf-8'))
         else:
             userSocket.send("You are not logged in".encode('utf-8'))
